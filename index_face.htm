@@ -22,8 +22,7 @@
 		.thumbnail-200-div{height: 232px;border-bottom: 1px solid #08C;margin-top: 10px;margin-bottom: 5px;}
 		.thumbnail-200-img{float:left;margin: 3px;}
 		.body-right .buttom-line-gray{border-bottom: 1px solid #CCC;margin-bottom: 3px;}
-		.controller input[type="button"],.controller input[type="file"]{color: white;background: #08C;line-height: 24px;height: 24px;width: 60px;font-size: 12px;border: none;cursor: pointer;margin-left: 15px;}
-		
+		.controller input[type="button"],.controller input[type="file"]{color: white;background: #08C;line-height: 24px;height: 24px;width: 60px;font-size: 12px;border: none;cursor: pointer;margin-left: 15px;}		
 	</style>
 
 </head>
@@ -54,7 +53,8 @@
 					</div>
 					<div class="controller">					
 						<input type="file" id="imgFace" style="display:none;" onchange="changeFace(this)"/>
-						<input type="button" value="选择图像" onclick="selectFace();"/>						
+						<input type="button" value="选择图像" onclick="selectFace();"/>
+						<!-- <input type="button" value="强制缩放" onclick="constraintZoom();"/> -->
 						<input type="button" value="提交"/>
 					</div>
 				</div>
@@ -81,7 +81,7 @@
 			        jcrop_api = this;
 			        view();
 				});
-			    function updateHidden(img){			    	
+			    function updateHidden(img){		    	
 			    	$("#curx").val(img.x);
 			    	$("#cury").val(img.y);
 			    	$("#imgw").val(img.w);
@@ -122,7 +122,23 @@
 							marginTop: '-' + Math.round(img200y * img.y) + 'px'
 						});															
 			    	}
-			    };			
+			    };
+			    function constraintZoom(){
+				    $('#curimg').Jcrop({
+						minSize: [48,48],
+						setSelect: [0,0,200,200],
+						aspectRatio: 1,
+						onChange:updatepreView,
+						onSelect:updateHidden
+					},function(){
+				        var bounds = this.getBounds();
+				        boundx = bounds[0];
+				        boundy = bounds[1];
+				        jcrop_api = this;
+				        view();
+					});
+			    };
+			    setTimeout("constraintZoom()",1000);
 		</script>
 
 		<script>
@@ -135,7 +151,7 @@
 			          var div = document.getElementById('preview');
 			          if (file.files && file.files[0])
 			          {
-			              div.innerHTML ='<img src="img/10533U421-0.jpg" alt="" class="curimg" id="curimg" />';		              
+			              div.innerHTML ='<img src="img/10533U421-0.jpg" alt="" class="curimg" id="curimg" />';
 			              var img = document.getElementById('curimg');
 			              img.onload = function(){
 			                var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
