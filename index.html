@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<script src="./js/jquery.min.js" type="text/javascript"></script>
+	<script src="./js/jquery.Jcrop.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="./css/jquery.Jcrop.css" type="text/css" />
+	<title> 图片上传 </title>
+	<style>
+		*{margin: 0px;padding: 0px;}
+		.body{margin:5px;border: 1px solid #BBB;width: 800px;height: 600px;}
+		.body p{margin-left: 5px;font-size: 14px;color: #08C;padding-top:3px;padding-bottom: 3px; border-bottom: 2px solid #08c;}
+		.body-left{margin:5px;border: 1px solid #BBB;width: 515px;height: 560px;float: left;}		
+		.body-right{margin:5px;border: 1px solid #BBB;width: 260px;height: 560px;float: right;}
+		.thumbnail-32-div{height: 64px;border-bottom: 1px solid #08C;margin-top: 5px;margin-bottom: 5px;}
+		.thumbnail-32-img{margin: 3px;float:left;}
+		.thumbnail-48-div{height: 80px;border-bottom: 1px solid #08C;margin-top: 5px;margin-bottom: 5px;}
+		.thumbnail-48-img{float:left;margin: 3px;}
+		.thumbnail-64-div{height: 96px;border-bottom: 1px solid #08C;margin-top: 5px;margin-bottom: 5px;}
+		.thumbnail-64-img{float:left;margin: 3px;}		
+		.thumbnail-200-div{height: 232px;border-bottom: 1px solid #08C;margin-top: 10px;margin-bottom: 5px;}
+		.thumbnail-200-img{float:left;margin: 3px;}
+		.body-right .buttom-line-gray{border-bottom: 1px solid #CCC;margin-bottom: 3px;}
+		.controller input[type="button"],.controller input[type="file"]{color: white;background: #08C;line-height: 24px;height: 24px;width: 60px;font-size: 12px;border: none;cursor: pointer;margin-left: 15px;}
+	</style>
+
+</head>
+<body>	
+		<div class="body">
+			<form method="post" action="?act=upload" enctype="multipart/form-data">
+				<p><span>头像上传</span></p>
+				<div class="body-left">
+					<div style="float:left;margin:3px;" id="preview"><img src="img/10533U421-0.jpg" alt="" class="curimg" id="curimg" height=553/></div>
+				</div>
+				<div class="body-right">
+					<p>预览</p>	
+					<div class="thumbnail-32-div">
+						<p class="buttom-line-gray">移动端头像</p>
+						<div style="width:32px;height:32px;overflow:hidden; float:left;margin-left:3px;"><img src="img/10533U421-0.jpg" alt="" class="thumbnail-32-img" id="thumbnail-32-img" /></div>
+					</div>			
+					<div class="thumbnail-48-div">
+						<p class="buttom-line-gray">管理后台头像</p>
+						<div style="width:48px;height:48px;overflow:hidden; float:left;margin-left:3px;"><img src="img/10533U421-0.jpg" alt="" class="thumbnail-48-img" id="thumbnail-48-img" /></div>
+					</div>
+					<div class="thumbnail-64-div">
+						<p class="buttom-line-gray">个人中心头像</p>
+						<div style="width:64px;height:64px;overflow:hidden; float:left;margin-left:3px;"><img src="img/10533U421-0.jpg" alt="" class="thumbnail-64-img" id="thumbnail-64-img" /></div>
+					</div>			
+					<div class="thumbnail-200-div">
+						<p class="buttom-line-gray">个人博客头像</p>
+						<div style="width:200px;height:200px;overflow:hidden; float:left;margin-left:3px;"><img src="img/10533U421-0.jpg" alt="" class="thumbnail-200-img" id="thumbnail-200-img" /></div>
+					</div>
+					<div class="controller">					
+						<input type="file" id="imgFace" style="display:none;" onchange="changeFace(this)"/>
+						<input type="button" value="选择图像" onclick="selectFace();"/>						
+						<input type="button" value="提交"/>
+					</div>
+				</div>
+			</form>
+		</div>	
+		<form action="" method="post" id="sendFace" onsubmit="return sendFace();">
+			<input type="hidden" id="curx" name="curx" />
+			<input type="hidden" id="cury" name="cury" />
+			<input type="hidden" id="imgw" name="imgw" />
+			<input type="hidden" id="imgh" name="imgh" />
+		</form>
+		<script>
+			    function selectFace(){
+			    	$("#imgFace").click();
+			    }
+		        function changeFace(file){
+			          var MAXWIDTH  = boundx; 
+			          var MAXHEIGHT = boundy;
+			          var div = document.getElementById('preview');
+			          if (file.files && file.files[0])
+			          {
+			              div.innerHTML ='<img src="img/10533U421-0.jpg" alt="" class="curimg" id="curimg" height=553/>';		              
+			              var img = document.getElementById('curimg');
+
+			              img.onload = function(){
+			                var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+			                img.width  =  rect.width;
+			                img.height =  rect.height;
+			                img.style.marginTop = rect.top+'px';
+			                			                			                			                
+			              }
+			              var reader = new FileReader();
+			              reader.onload = function(evt){img.src = evt.target.result;}
+			              reader.readAsDataURL(file.files[0]); 
+			          }
+			          else //兼容IE
+			          {
+			            var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+			            file.select();
+			            var src = document.selection.createRange().text;
+			            div.innerHTML = '<img src="img/10533U421-0.jpg" alt="" class="curimg" id="curimg" height=553/>';			            
+			            var img = document.getElementById('curimg');
+			            img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+			            var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+			            status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+			            div.innerHTML = "<div id=divhead style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+			          }
+				    $('#curimg').Jcrop({
+						minSize: [48,48],
+						setSelect: [0,0,200,200],
+						aspectRatio: 1,
+						onSelect:updateHidden,
+						onSelect:updatepreView,
+						onChange:updatepreView
+					},function(){					
+				        var bounds = this.getBounds();
+				        boundx = bounds[0];
+				        boundy = bounds[1];			        
+				        jcrop_api = this;
+				        view();
+					});					
+		        }
+
+		        function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+		            var param = {top:0, left:0, width:width, height:height};
+		            if( width>maxWidth || height>maxHeight ){
+		                rateWidth = width / maxWidth;
+		                rateHeight = height / maxHeight;		                
+		                if( rateWidth > rateHeight )
+		                {
+		                    param.width =  maxWidth;
+		                    param.height = Math.round(height / rateWidth);
+		                }else
+		                {
+		                    param.width = Math.round(width / rateHeight);
+		                    param.height = maxHeight;
+		                }
+		            }		            
+		            param.left = Math.round((maxWidth - param.width) / 2);
+		            param.top = Math.round((maxHeight - param.height) / 2);
+		            return param;
+		        }
+		        function view(){//预览裁剪后的图像
+		        	var src = ($("#curimg").attr("src"));
+		        	$("#thumbnail-32-img").attr("src",src);
+		        	$("#thumbnail-48-img").attr("src",src);
+		        	$("#thumbnail-64-img").attr("src",src);
+		        	$("#thumbnail-200-img").attr("src",src);
+		        }
+		</script>
+
+		<script>
+			var boundx,boundy,jcrop;			
+				//var boundx,boundy,jcrop;
+			    $('#curimg').Jcrop({
+					minSize: [48,48],
+					setSelect: [0,0,200,200],
+					aspectRatio: 1,
+					onSelect:updateHidden,
+					onSelect:updatepreView,
+					onChange:updatepreView
+				},function(){					
+			        var bounds = this.getBounds();
+			        boundx = bounds[0];
+			        boundy = bounds[1];			        
+			        jcrop_api = this;					
+				});
+			    function updateHidden(img){
+			    	$("#curx").val(img.x);
+			    	$("#cury").val(img.y);
+			    	$("#imgw").val(img.w);
+			    	$("#imgh").val(img.h);
+			    };
+			    function updatepreView(img){
+			    	if(parseInt(img.w)>0) {
+			    		var img32x = 32/img.w;
+			    		var img32y = 32/img.h;
+						$('#thumbnail-32-img').css({
+							width: Math.round(img32x * boundx) + 'px',
+							height: Math.round(img32y * boundy) + 'px',
+							marginLeft: '-' + Math.round(img32x * img.x) + 'px',
+							marginTop: '-' + Math.round(img32y * img.y) + 'px'
+						});
+			    		var img48x = 48/img.w;
+			    		var img48y = 48/img.h;
+						$('#thumbnail-48-img').css({
+							width: Math.round(img48x * boundx) + 'px',
+							height: Math.round(img48y * boundy) + 'px',
+							marginLeft: '-' + Math.round(img48x * img.x) + 'px',
+							marginTop: '-' + Math.round(img48y * img.y) + 'px'
+						});
+			    		var img64x = 64/img.w;
+			    		var img64y = 64/img.h;
+						$('#thumbnail-64-img').css({
+							width: Math.round(img64x * boundx) + 'px',
+							height: Math.round(img64y * boundy) + 'px',
+							marginLeft: '-' + Math.round(img64x * img.x) + 'px',
+							marginTop: '-' + Math.round(img64y * img.y) + 'px'
+						});
+			    		var img200x = 200/img.w;
+			    		var img200y = 200/img.h;
+						$('#thumbnail-200-img').css({
+							width: Math.round(img200x * boundx) + 'px',
+							height: Math.round(img200y * boundy) + 'px',
+							marginLeft: '-' + Math.round(img200x * img.x) + 'px',
+							marginTop: '-' + Math.round(img200y * img.y) + 'px'
+						});															
+			    	}
+			    };			
+		</script>		
+</body>
+</html>
